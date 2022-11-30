@@ -1,33 +1,63 @@
-var width = 960,
-    height = 500;
+// // load and display the people
+// var svg = d3.select("#vis").select(function() {
+//     return this.appendChild(document.getElementById("people"));
 
-var projection = d3.geoMercator()
-    .center([0, 5 ])
-    .scale(150)
-    .rotate([-180,0]);
+// });
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+// var zoom = d3.zoom()
+//       .scaleExtent([1, 8])
+//       .on('zoom', function(event) {
+//         console.log("hi")
+//           d3.select('svg')
+//            .attr('transform', event.transform);
+// });
 
-var path = d3.geoPath()
-    .projection(projection);
+// svg.call(zoom);
 
-var g = svg.append("g");
+let data = [], width = 600, height = 400, numPoints = 100;
 
-// load and display the World
-d3.select("#vis").select(function() {
-    return this.appendChild(document.getElementById("people"));
+let zoom = d3.zoom()
+	.on('zoom', handleZoom);
 
-});
+function handleZoom(e) {
+	d3.select('svg g')
+		.attr('transform', e.transform);
+}
 
+function initZoom() {
+	d3.select('svg')
+		.call(zoom);
+}
 
+function updateData() {
+	data = [];
+	for(let i=0; i<numPoints; i++) {
+		data.push({
+			id: i,
+			x: Math.random() * width,
+			y: Math.random() * height
+		});
+	}
+}
 
-var zoom = d3.zoom()
-      .scaleExtent([1, 8])
-      .on('zoom', function(event) {
-          g.selectAll('path')
-           .attr('transform', event.transform);
-});
+function update() {
+	d3.select('svg g')
+		.selectAll('circle')
+		.data(data)
+		.join('circle')
+		.attr('cx', function(d) { return d.x; })
+		.attr('cy', function(d) { return d.y; })
+		.attr('r', 3);
+}
 
-svg.call(zoom);
+  Promise.all([
+    d3.xml('assets/people.svg'),
+    d3.xml('assets/paris.svg')
+  ]).then(data => {
+    d3.select("#people-container").node().append(data[0].documentElement);
+    d3.select("#paris-container").node().append(data[1].documentElement);
+  });
+
+initZoom();
+updateData();
+update();
