@@ -14,6 +14,8 @@ const minZoom = .99
 
 var x = .99
 
+var change = false;
+
 
 
 let data = []
@@ -41,9 +43,10 @@ function handleZoom({transform}) {
 	d3.selectAll('svg g')
 		.attr('transform', transform)
 
+
   k = transform.k;
 
-  handleSizeChange(k, x)  
+  k = handleSizeChange(k, x);
     //.attr('cx', function(d) { return xScaleNew(d.distance); })
     //.attr('r', function(d) { return d.scaledRadius * transform.k; });
 }
@@ -83,7 +86,6 @@ function handleSizeChange(k, x) {
     var town = document.querySelector("#town-container");
     var paris = document.querySelector("#paris-container");
     var globe = document.querySelector("#globe-container");
-    var change = false;
 
 
     if (x != k) {
@@ -91,46 +93,46 @@ function handleSizeChange(k, x) {
       change = true
     }
   
-    console.log(k, x)
+    console.log(k, x, change)
 
-  if (k < 1 && change) {
+  if (k == .99 && change) {
     if (!people.classList.contains("hidden1")) {
       people.classList.add("hidden1")
       town.classList.remove("hidden2")
       change = false;
-      return
+      return 1.5
     }
     else if (!town.classList.contains("hidden2")) {
       town.classList.add("hidden2")
       paris.classList.remove("hidden3")
       change = false;
-      return
+      return 1.5
     }
     else if (!paris.classList.contains("hidden3")) {
       paris.classList.add("hidden3")
       globe.classList.remove('hidden4')
       change = false;
-      return
+      return 1.5
     }
   }
-  if (k >= 1.49 && change) {
+  if (k == 1.5 && change) {
     if (!globe.classList.contains("hidden4")) {
       globe.classList.add("hidden4")
       paris.classList.remove("hidden3")
       change = false;
-      return
+      return .99
     }
     else if (!paris.classList.contains("hidden3")) {
       paris.classList.add("hidden3")
       town.classList.remove("hidden2")
       change = false;
-      return
+      return .99
     }
     else if (!town.classList.contains("hidden2")) {
       town.classList.add("hidden2")
       people.classList.remove("hidden1")
       change = false;
-      return
+      return .99
     }
   }
 }
