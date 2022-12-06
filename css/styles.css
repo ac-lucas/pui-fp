@@ -1,5 +1,10 @@
 
 
+body {
+    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    text-align: center;
+}
+
 .hidden1 {
     display: none;
 }
