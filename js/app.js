@@ -1,3 +1,10 @@
+// references:
+// https://www.d3indepth.com/zoom-and-pan/
+
+
+
+
+
 var margin = { 
   top: window.innerHeight * 0.3, 
   left: 50, 
