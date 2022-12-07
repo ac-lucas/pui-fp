@@ -23,8 +23,6 @@ var x = .99
 
 var change = false;
 
-
-
 let data = []
 
 var xScale = d3.scaleLinear()
@@ -40,7 +38,6 @@ let zoom = d3.zoom()
 
 var vector = d3.selectAll('.vectors').call(zoom)
 
-
 function handleZoom({transform}) {
   // transform.x = screenWidth;
   // transform.y = height / 2;
@@ -53,95 +50,106 @@ function handleZoom({transform}) {
 
   k = transform.k;
 
-  k = handleSizeChange(k, x);
+  console.log(k)
+  handleSizeChange(k, x, transform);
+
     //.attr('cx', function(d) { return xScaleNew(d.distance); })
     //.attr('r', function(d) { return d.scaledRadius * transform.k; });
 }
 
 function initZoom() {
   //zoom.transform(selection, transform[, point]);
-  // var initialTransform = d3.zoomIdentity.scale(20);
-  // vector.call(zoom.transform, initialTransform);
+  var initialTransform = d3.zoomIdentity.scale(20);
+  vector.call(zoom.transform, initialTransform);
 
-  // var zoomOutTransform = d3.zoomIdentity.translate(0, 0).scale(minZoom);
-    
-  // vector
-  //     .transition()
-  //       .duration(5000)
-  //       .call(zoom.transform, zoomOutTransform)
-  //       .on('end', zoomToNormal)
-
-  //       function zoomToNormal() {
-
-  //         vector
-  //           .transition()
-  //             .duration(3000)
-  //             .ease(d3.easeQuadInOut)
-  //             .call(zoom.transform, d3.zoomIdentity)
-
+  initialAnimation()
+  
 	vector
     .on("dblclick.zoom", null)
     // .attr('transform', 'translate(300,300)')
 }
 
 
-zoom.scaleTo(vector, .001)
-
 
 function handleSizeChange(k, x) {
-    var people = document.querySelector("#people-container");
-    var town = document.querySelector("#town-container");
-    var paris = document.querySelector("#paris-container");
-    var globe = document.querySelector("#globe-container");
+    var peopleWeb = document.querySelector("#people-container");
+    var townWeb = document.querySelector("#town-container");
+    var parisWeb = document.querySelector("#paris-container");
+    var globeWeb = document.querySelector("#globe-container");
+    var peopleMobile = document.querySelector("#people-container-mobile");
+    var townMobile = document.querySelector("#town-container-mobile");
+    var parisMobile = document.querySelector("#paris-container-mobile");
+    var globeMobile = document.querySelector("#globe-container-mobile");
+
 
 
     if (x != k) {
       x = k;
       change = true
     }
-  
-    console.log(k, x, change)
 
   if (k == .99 && change) {
-    if (!people.classList.contains("hidden1")) {
-      people.classList.add("hidden1")
-      town.classList.remove("hidden2")
+    if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1")) {
+      peopleWeb.classList.add("hidden1")
+      peopleMobile.classList.add("hidden1")
+      townWeb.classList.remove("hidden2")
+      townMobile.classList.remove("hidden2")
       change = false;
-      return 1.5
+      //return 1.5
     }
-    else if (!town.classList.contains("hidden2")) {
-      town.classList.add("hidden2")
-      paris.classList.remove("hidden3")
+    else if (!townWeb.classList.contains("hidden2") && !townMobile.classList.contains("hidden2")) {
+      townWeb.classList.add("hidden2")
+      townMobile.classList.add("hidden2")
+      parisWeb.classList.remove("hidden3")
+      parisMobile.classList.remove("hidden3")
       change = false;
-      return 1.5
+      //return 1.5
     }
-    else if (!paris.classList.contains("hidden3")) {
-      paris.classList.add("hidden3")
-      globe.classList.remove('hidden4')
+    else if (!parisWeb.classList.contains("hidden3") && !parisMobile.classList.contains("hidden3")) {
+      parisWeb.classList.add("hidden3")
+      parisMobile.classList.add("hidden3")
+      globeWeb.classList.remove('hidden4')
+      globeMobile.classList.remove('hidden4')
       change = false;
-      return 1.5
+      //return 1.5
     }
   }
   if (k == 1.5 && change) {
-    if (!globe.classList.contains("hidden4")) {
-      globe.classList.add("hidden4")
-      paris.classList.remove("hidden3")
+    if (!globeWeb.classList.contains("hidden4") && !globeMobile.classList.contains("hidden4")) {
+      globeWeb.classList.add("hidden4")
+      globeMobile.classList.add("hidden4")
+      parisWeb.classList.remove("hidden3")
+      parisMobile.classList.remove("hidden3")
       change = false;
-      return .99
+      //return .99
     }
-    else if (!paris.classList.contains("hidden3")) {
-      paris.classList.add("hidden3")
-      town.classList.remove("hidden2")
+    else if (!parisWeb.classList.contains("hidden3") && !parisMobile.classList.contains("hidden3")) {
+      parisWeb.classList.add("hidden3")
+      parisMobile.classList.add("hidden3")
+      townWeb.classList.remove("hidden2")
+      townMobile.classList.remove("hidden2")
       change = false;
-      return .99
+      // return .99
     }
-    else if (!town.classList.contains("hidden2")) {
-      town.classList.add("hidden2")
-      people.classList.remove("hidden1")
+    else if (!townWeb.classList.contains("hidden2") && !townMobile.classList.contains("hidden2")) {
+      townWeb.classList.add("hidden2")
+      townMobile.classList.add("hidden2")
+      peopleWeb.classList.remove("hidden1")
+      peopleMobile.classList.remove("hidden1")
       change = false;
-      return .99
+      // return .99
     }
   }
+}
+
+function initialAnimation () {
+
+
+  d3.selectAll('.vectors').call(zoom.transform,
+    d3.zoomIdentity
+      .translate(0, 0)
+      .scale(2)
+  )
 }
 
 
@@ -150,11 +158,17 @@ function handleSizeChange(k, x) {
     d3.xml('assets/people.svg'),
     d3.xml('assets/towns.svg'),
     d3.xml('assets/paris.svg'),
+    d3.xml('assets/people-mobile.svg'),
+    d3.xml('assets/town-mobile.svg'),
+    d3.xml('assets/paris-mobile.svg')
     
   ]).then(data => {
     d3.select("#people-container").node().append(data[0].documentElement);
     d3.select("#town-container").node().append(data[1].documentElement);
     d3.select("#paris-container").node().append(data[2].documentElement);
+    d3.select("#people-container-mobile").node().append(data[3].documentElement);
+    d3.select("#town-container-mobile").node().append(data[4].documentElement);
+    d3.select("#paris-container-mobile").node().append(data[5].documentElement)
   });
 
 

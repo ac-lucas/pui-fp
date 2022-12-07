@@ -1,7 +1,5 @@
-
-
 body {
-    font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-family: monospace;
     text-align: center;
 }
 
@@ -26,4 +24,32 @@ body {
     margin-left: auto;
     margin-right: auto;
     width: 50%;
+}
+
+
+@media screen and (min-width: 1001px) {
+    .mobile {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .web {
+        display: none;
+    }
+
+    h1 {
+        font-size: 60px;
+    }
+
+    #globe-container-mobile {
+        display: flex;
+        height: 1000px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #globe-container-mobile img {
+        display: flex;
+    }
 }
