@@ -26,6 +26,19 @@ body {
     width: 50%;
 }
 
+.freeze { 
+    position:fixed; 
+    z-index:10; 
+    width:100vw; 
+    height:100vh; 
+    top:0; 
+    left:0;
+  }
+
+  .hideText {
+    display: none;
+  }
+
 
 @media screen and (min-width: 1001px) {
     .mobile {

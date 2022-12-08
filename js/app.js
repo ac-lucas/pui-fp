@@ -1,5 +1,6 @@
 // references:
 // https://www.d3indepth.com/zoom-and-pan/
+// https://stackoverflow.com/questions/55942922/how-to-freeze-browser-window-intentionally-like-alert-confirm-and-prompt-does
 
 
 
@@ -38,6 +39,17 @@ let zoom = d3.zoom()
 
 var vector = d3.selectAll('.vectors').call(zoom)
 
+var peopleWeb = document.querySelector("#people-container");
+var townWeb = document.querySelector("#town-container");
+var parisWeb = document.querySelector("#paris-container");
+var globeWeb = document.querySelector("#globe-container");
+var peopleMobile = document.querySelector("#people-container-mobile");
+var townMobile = document.querySelector("#town-container-mobile");
+var parisMobile = document.querySelector("#paris-container-mobile");
+var globeMobile = document.querySelector("#globe-container-mobile");
+
+
+
 function handleZoom({transform}) {
   // transform.x = screenWidth;
   // transform.y = height / 2;
@@ -51,7 +63,8 @@ function handleZoom({transform}) {
   k = transform.k;
 
   console.log(k)
-  handleSizeChange(k, x, transform);
+  handleSizeChange(k, x);
+  handleFreezing(k);
 
     //.attr('cx', function(d) { return xScaleNew(d.distance); })
     //.attr('r', function(d) { return d.scaledRadius * transform.k; });
@@ -72,16 +85,6 @@ function initZoom() {
 
 
 function handleSizeChange(k, x) {
-    var peopleWeb = document.querySelector("#people-container");
-    var townWeb = document.querySelector("#town-container");
-    var parisWeb = document.querySelector("#paris-container");
-    var globeWeb = document.querySelector("#globe-container");
-    var peopleMobile = document.querySelector("#people-container-mobile");
-    var townMobile = document.querySelector("#town-container-mobile");
-    var parisMobile = document.querySelector("#paris-container-mobile");
-    var globeMobile = document.querySelector("#globe-container-mobile");
-
-
 
     if (x != k) {
       x = k;
@@ -138,6 +141,33 @@ function handleSizeChange(k, x) {
       peopleMobile.classList.remove("hidden1")
       change = false;
       // return .99
+    }
+  }
+}
+
+function handleFreezing (k) {
+  let newK = k;
+
+  if (k == 1.5) {
+    newK = 1.5
+  }
+
+  else if (1.4 >= k >= 1.3) {
+    newK = 1.35
+  }
+
+  else if (k < 1) {
+    newK = .99
+  }
+
+  if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1")) {
+    if (newK == 1.5) {
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+        document.querySelector(".display").classList.add("hideText")
+      }, "2000")
     }
   }
 }
