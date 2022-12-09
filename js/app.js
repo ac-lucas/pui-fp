@@ -26,6 +26,8 @@ var change = false;
 
 let data = []
 
+let oldK = 0;
+
 var xScale = d3.scaleLinear()
 .domain([0, screenWidth])
 .range([0, chartWidth]);
@@ -147,27 +149,63 @@ function handleSizeChange(k, x) {
 
 function handleFreezing (k) {
   let newK = k;
+  console.log(k, oldK)
 
   if (k == 1.5) {
     newK = 1.5
+    oldK = 1.5
   }
 
-  else if (1.4 >= k >= 1.3) {
+  else if (1.4 >= k && k >= 1.3 && oldK != 1.35) {
     newK = 1.35
+    oldK = 1.35
+  }
+
+  else if (1.2 >= k && k >= 1.1 && oldK != 1.15) {
+    newK = 1.15
+    oldK = 1.15
+
   }
 
   else if (k < 1) {
     newK = .99
+    oldK = .99
   }
 
   if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1")) {
     if (newK == 1.5) {
       document.querySelector(".pageCover").classList.add("freeze")
-      document.querySelector(".display").classList.remove("hideText")
+      document.querySelector(".display1").classList.remove("hideText")
       setTimeout(() => {
         document.querySelector(".pageCover").classList.remove("freeze")
-        document.querySelector(".display").classList.add("hideText")
       }, "2000")
+    }
+   else if (newK == 1.35) {
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display2").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else if (newK == 1.15) {
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display3").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else if (newK == .99) {
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display4").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else {
+      document.querySelector(".display1").classList.add("hideText")
+      document.querySelector(".display2").classList.add("hideText")
+      document.querySelector(".display3").classList.add("hideText")
+      document.querySelector(".display4").classList.add("hideText")
     }
   }
 }
