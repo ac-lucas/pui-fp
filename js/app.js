@@ -6,60 +6,66 @@
 
 
 
-var margin = { 
-  top: window.innerHeight * 0.3, 
-  left: 50, 
-  bottom: window.innerHeight * 0.4, 
-  right: 50 
-}; 
+let margin = {
+  top: window.innerHeight * 0.3,
+  left: 50,
+  bottom: window.innerHeight * 0.4,
+  right: 50
+};
 
 // The chart *and* screen height
-var height = window.innerHeight - margin.top - margin.bottom;
-var chartWidth = 10000;
-var screenWidth = window.innerWidth - margin.left - margin.right;
+let height = window.innerHeight - margin.top - margin.bottom;
+let chartWidth = 10000;
+let screenWidth = window.innerWidth - margin.left - margin.right;
 
 const minZoom = .99
 
-var x = .99
+let x = .99
 
-var change = false;
+let change = false;
 
 let data = []
 
 let oldK = 0;
 
-var xScale = d3.scaleLinear()
-.domain([0, screenWidth])
-.range([0, chartWidth]);
+let postHighSchoolFlag = false;
+
+let populationNum = 4500;
+
+
+
+let xScale = d3.scaleLinear()
+  .domain([0, screenWidth])
+  .range([0, chartWidth]);
 
 let zoom = d3.zoom()
-  .scaleExtent([minZoom,1.5])
-  .translateExtent([[0, 0], [0,0]])
-  .extent([[0, 0], [0,0]])
-	.on('zoom', handleZoom)
+  .scaleExtent([minZoom, 1.5])
+  .translateExtent([[0, 0], [0, 0]])
+  .extent([[0, 0], [0, 0]])
+  .on('zoom', handleZoom)
 
 
-var vector = d3.selectAll('.vectors').call(zoom)
+let vector = d3.selectAll('.vectors').call(zoom)
 
-var peopleWeb = document.querySelector("#people-container");
-var townWeb = document.querySelector("#town-container");
-var parisWeb = document.querySelector("#paris-container");
-var globeWeb = document.querySelector("#globe-container");
-var peopleMobile = document.querySelector("#people-container-mobile");
-var townMobile = document.querySelector("#town-container-mobile");
-var parisMobile = document.querySelector("#paris-container-mobile");
-var globeMobile = document.querySelector("#globe-container-mobile");
+let peopleWeb = document.querySelector("#people-container");
+let townWeb = document.querySelector("#town-container");
+let parisWeb = document.querySelector("#paris-container");
+let globeWeb = document.querySelector("#globe-container");
+let peopleMobile = document.querySelector("#people-container-mobile");
+let townMobile = document.querySelector("#town-container-mobile");
+let parisMobile = document.querySelector("#paris-container-mobile");
+let globeMobile = document.querySelector("#globe-container-mobile");
 
 
 
-function handleZoom({transform}) {
+function handleZoom({ transform }) {
   // transform.x = screenWidth;
   // transform.y = height / 2;
 
-  //var xScaleNew = transform.rescaleX(xScale);
+  //let xScaleNew = transform.rescaleX(xScale);
 
-	d3.selectAll('svg g')
-		.attr('transform', transform)
+  d3.selectAll('svg g')
+    .attr('transform', transform)
 
 
   k = transform.k;
@@ -67,31 +73,32 @@ function handleZoom({transform}) {
   console.log(k)
   handleSizeChange(k, x);
   handleFreezing(k);
+  showPopulation();
 
-    //.attr('cx', function(d) { return xScaleNew(d.distance); })
-    //.attr('r', function(d) { return d.scaledRadius * transform.k; });
+  //.attr('cx', function(d) { return xScaleNew(d.distance); })
+  //.attr('r', function(d) { return d.scaledRadius * transform.k; });
 }
 
 function initZoom() {
   //zoom.transform(selection, transform[, point]);
-  var initialTransform = d3.zoomIdentity.scale(20);
+  let initialTransform = d3.zoomIdentity.scale(20);
   vector.call(zoom.transform, initialTransform);
 
   initialAnimation()
-  
-	vector
+
+  vector
     .on("dblclick.zoom", null)
-    // .attr('transform', 'translate(300,300)')
+  // .attr('transform', 'translate(300,300)')
 }
 
 
 
 function handleSizeChange(k, x) {
 
-    if (x != k) {
-      x = k;
-      change = true
-    }
+  if (x != k) {
+    x = k;
+    change = true
+  }
 
   if (k == .99 && change) {
     if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1")) {
@@ -116,6 +123,7 @@ function handleSizeChange(k, x) {
       globeWeb.classList.remove('hidden4')
       globeMobile.classList.remove('hidden4')
       change = false;
+      populationNum = 8000000000
       //return 1.5
     }
   }
@@ -147,13 +155,18 @@ function handleSizeChange(k, x) {
   }
 }
 
-function handleFreezing (k) {
+function handleFreezing(k) {
   let newK = k;
   console.log(k, oldK)
 
   if (k == 1.5) {
     newK = 1.5
     oldK = 1.5
+  }
+
+  else if (1.4 >= k && k >= 1.49 && oldK != 1.45) {
+    newK = 1.45
+    oldK = 1.45
   }
 
   else if (1.4 >= k && k >= 1.3 && oldK != 1.35) {
@@ -174,13 +187,17 @@ function handleFreezing (k) {
 
   if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1")) {
     if (newK == 1.5) {
+      postHighSchoolFlag = false;
+      populationNum = 4
       document.querySelector(".pageCover").classList.add("freeze")
       document.querySelector(".display1").classList.remove("hideText")
       setTimeout(() => {
         document.querySelector(".pageCover").classList.remove("freeze")
       }, "2000")
     }
-   else if (newK == 1.35) {
+    else if (newK == 1.35) {
+      postHighSchoolFlag = false;
+      populationNum = 50
       document.querySelector(".pageCover").classList.add("freeze")
       document.querySelector(".display2").classList.remove("hideText")
       setTimeout(() => {
@@ -188,13 +205,16 @@ function handleFreezing (k) {
       }, "2000")
     }
     else if (newK == 1.15) {
+      populationNum = 4500
       document.querySelector(".pageCover").classList.add("freeze")
       document.querySelector(".display3").classList.remove("hideText")
       setTimeout(() => {
         document.querySelector(".pageCover").classList.remove("freeze")
       }, "2000")
+      postHighSchoolFlag = true;
     }
     else if (newK == .99) {
+      populationNum = 11000
       document.querySelector(".pageCover").classList.add("freeze")
       document.querySelector(".display4").classList.remove("hideText")
       setTimeout(() => {
@@ -202,15 +222,105 @@ function handleFreezing (k) {
       }, "2000")
     }
     else {
-      document.querySelector(".display1").classList.add("hideText")
-      document.querySelector(".display2").classList.add("hideText")
-      document.querySelector(".display3").classList.add("hideText")
-      document.querySelector(".display4").classList.add("hideText")
+      removeAllText();
+    }
+  }
+
+
+  else if (!townWeb.classList.contains("hidden2") && !townMobile.classList.contains("hidden2")) {
+    if (newK == 1.45) {
+      populationNum = 550000
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display5").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else if (newK == 1.15) {
+      populationNum = 1620000
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display6").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+
+    }
+    else if (newK == .99) {
+      populationNum = 2100000
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display7").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else {
+      removeAllText();
+    }
+  }
+
+
+  else if (!parisWeb.classList.contains("hidden3") && !parisMobile.classList.contains("hidden3")) {
+    if (newK == 1.45) {
+      populationNum = 37000000
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display8").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else if (newK == 1.35) {
+      populationNum = 592000000
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display9").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else if (newK == 1.15) {
+      populationNum = 1450000000
+      document.querySelector(".pageCover").classList.add("freeze")
+      document.querySelector(".display10").classList.remove("hideText")
+      setTimeout(() => {
+        document.querySelector(".pageCover").classList.remove("freeze")
+      }, "2000")
+    }
+    else {
+      removeAllText();
     }
   }
 }
 
-function initialAnimation () {
+function showPopulation() {
+  if (postHighSchoolFlag) {
+    document.querySelector(".populationCounter").classList.remove("hideText");
+    document.querySelector(".populationCounterLabel").classList.remove("hideText");
+    document.querySelector(".populationCounter").innerHTML = populationNum;
+    populationCounter();
+  }
+  else {
+    document.querySelector(".populationCounter").classList.add("hideText");
+    document.querySelector(".populationCounterLabel").classList.add("hideText");
+  }
+}
+
+function removeAllText() {
+  document.querySelector(".display1").classList.add("hideText")
+  document.querySelector(".display2").classList.add("hideText")
+  document.querySelector(".display3").classList.add("hideText")
+  document.querySelector(".display4").classList.add("hideText")
+  document.querySelector(".display5").classList.add("hideText")
+  document.querySelector(".display6").classList.add("hideText")
+  document.querySelector(".display7").classList.add("hideText")
+  document.querySelector(".display8").classList.add("hideText")
+  document.querySelector(".display9").classList.add("hideText")
+  document.querySelector(".display10").classList.add("hideText")
+}
+
+function populationCounter() {
+  populationNum;
+}
+
+function initialAnimation() {
 
 
   d3.selectAll('.vectors').call(zoom.transform,
@@ -222,22 +332,22 @@ function initialAnimation () {
 
 
 
-  Promise.all([
-    d3.xml('assets/people.svg'),
-    d3.xml('assets/towns.svg'),
-    d3.xml('assets/paris.svg'),
-    d3.xml('assets/people-mobile.svg'),
-    d3.xml('assets/town-mobile.svg'),
-    d3.xml('assets/paris-mobile.svg')
-    
-  ]).then(data => {
-    d3.select("#people-container").node().append(data[0].documentElement);
-    d3.select("#town-container").node().append(data[1].documentElement);
-    d3.select("#paris-container").node().append(data[2].documentElement);
-    d3.select("#people-container-mobile").node().append(data[3].documentElement);
-    d3.select("#town-container-mobile").node().append(data[4].documentElement);
-    d3.select("#paris-container-mobile").node().append(data[5].documentElement)
-  });
+Promise.all([
+  d3.xml('assets/people.svg'),
+  d3.xml('assets/towns.svg'),
+  d3.xml('assets/paris.svg'),
+  d3.xml('assets/people-mobile.svg'),
+  d3.xml('assets/town-mobile.svg'),
+  d3.xml('assets/paris-mobile.svg')
+
+]).then(data => {
+  d3.select("#people-container").node().append(data[0].documentElement);
+  d3.select("#town-container").node().append(data[1].documentElement);
+  d3.select("#paris-container").node().append(data[2].documentElement);
+  d3.select("#people-container-mobile").node().append(data[3].documentElement);
+  d3.select("#town-container-mobile").node().append(data[4].documentElement);
+  d3.select("#paris-container-mobile").node().append(data[5].documentElement)
+});
 
 
 
