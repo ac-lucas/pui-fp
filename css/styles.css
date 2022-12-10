@@ -70,17 +70,21 @@ body {
     }
 
     h1 {
-        font-size: 60px;
+        font-size: 40px;
     }
 
-    #globe-container-mobile {
+    .mobile-globe {
         display: flex;
         height: 1000px;
         align-items: center;
         justify-content: center;
     }
 
-    #globe-container-mobile img {
+    .mobile-globe img {
         display: flex;
+    }
+
+    .hidden4 {
+        display: none;
     }
 }
