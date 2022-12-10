@@ -36,8 +36,22 @@ body {
   }
 
   .population {
-    display: block;
+    display: flex; 
+    justify-content: center;
   }
+
+  .populationCounterLabel {
+    display: flex; 
+    justify-content: center;
+    padding-right: 10px;
+  }
+  
+.populationCounter {
+    display: flex; 
+    justify-content: center;
+}
+
+
 
   .hideText {
     display: none;

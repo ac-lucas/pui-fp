@@ -59,10 +59,6 @@ let globeMobile = document.querySelector("#globe-container-mobile");
 
 
 function handleZoom({ transform }) {
-  // transform.x = screenWidth;
-  // transform.y = height / 2;
-
-  //let xScaleNew = transform.rescaleX(xScale);
 
   d3.selectAll('svg g')
     .attr('transform', transform)
@@ -75,20 +71,14 @@ function handleZoom({ transform }) {
   handleFreezing(k);
   showPopulation();
 
-  //.attr('cx', function(d) { return xScaleNew(d.distance); })
-  //.attr('r', function(d) { return d.scaledRadius * transform.k; });
 }
 
 function initZoom() {
-  //zoom.transform(selection, transform[, point]);
   let initialTransform = d3.zoomIdentity.scale(20);
   vector.call(zoom.transform, initialTransform);
 
-  initialAnimation()
-
   vector
     .on("dblclick.zoom", null)
-  // .attr('transform', 'translate(300,300)')
 }
 
 
@@ -295,7 +285,6 @@ function showPopulation() {
     document.querySelector(".populationCounter").classList.remove("hideText");
     document.querySelector(".populationCounterLabel").classList.remove("hideText");
     document.querySelector(".populationCounter").innerHTML = populationNum;
-    populationCounter();
   }
   else {
     document.querySelector(".populationCounter").classList.add("hideText");
@@ -314,20 +303,6 @@ function removeAllText() {
   document.querySelector(".display8").classList.add("hideText")
   document.querySelector(".display9").classList.add("hideText")
   document.querySelector(".display10").classList.add("hideText")
-}
-
-function populationCounter() {
-  populationNum;
-}
-
-function initialAnimation() {
-
-
-  d3.selectAll('.vectors').call(zoom.transform,
-    d3.zoomIdentity
-      .translate(0, 0)
-      .scale(2)
-  )
 }
 
 
