@@ -2,25 +2,9 @@
 // https://www.d3indepth.com/zoom-and-pan/
 // https://stackoverflow.com/questions/55942922/how-to-freeze-browser-window-intentionally-like-alert-confirm-and-prompt-does
 
-
-
-
-
-let margin = {
-  top: window.innerHeight * 0.3,
-  left: 50,
-  bottom: window.innerHeight * 0.4,
-  right: 50
-};
-
-// The chart *and* screen height
-let height = window.innerHeight - margin.top - margin.bottom;
-let chartWidth = 10000;
-let screenWidth = window.innerWidth - margin.left - margin.right;
-
 const minZoom = .99
 
-let x = .99
+let oldZoom = .99
 
 let change = false;
 
@@ -32,11 +16,8 @@ let postHighSchoolFlag = false;
 
 let populationNum = 4500;
 
+let flag = true;
 
-
-let xScale = d3.scaleLinear()
-  .domain([0, screenWidth])
-  .range([0, chartWidth]);
 
 let zoom = d3.zoom()
   .scaleExtent([minZoom, 1.5])
@@ -60,20 +41,23 @@ let globeMobile = document.querySelector("#globe-container-mobile");
 
 function handleZoom({ transform }) {
 
+// perform zoom
   d3.selectAll('svg g')
     .attr('transform', transform)
 
 
   k = transform.k;
 
-  console.log(k)
-  handleSizeChange(k, x);
+  handleSizeChange(k, oldZoom);
   handleFreezing(k);
   showPopulation();
 
 }
 
 function initZoom() {
+
+  // create zoom
+
   let initialTransform = d3.zoomIdentity.scale(20);
   vector.call(zoom.transform, initialTransform);
 
@@ -83,78 +67,87 @@ function initZoom() {
 
 
 
-function handleSizeChange(k, x) {
+function handleSizeChange(k, oldZoom) {
 
-  if (x != k) {
-    x = k;
+  // find if the zoom has changed
+  if (oldZoom != k) {
+    oldZoom = k;
     change = true
   }
 
+  if (k != .99 && k != 1.5) {
+    flag = false;
+  }
+
+  // if all the way zoomed out, replace image
   if (k == .99 && change) {
-    if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1")) {
+    if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1") && !flag) {
+      flag = true;
       peopleWeb.classList.add("hidden1")
       peopleMobile.classList.add("hidden1")
       townWeb.classList.remove("hidden2")
       townMobile.classList.remove("hidden2")
       change = false;
-      //return 1.5
     }
-    else if (!townWeb.classList.contains("hidden2") && !townMobile.classList.contains("hidden2")) {
+    else if (!townWeb.classList.contains("hidden2") && !townMobile.classList.contains("hidden2") && !flag) {
+      flag = true;
       townWeb.classList.add("hidden2")
       townMobile.classList.add("hidden2")
       parisWeb.classList.remove("hidden3")
       parisMobile.classList.remove("hidden3")
       change = false;
-      //return 1.5
     }
-    else if (!parisWeb.classList.contains("hidden3") && !parisMobile.classList.contains("hidden3")) {
+    else if (!parisWeb.classList.contains("hidden3") && !parisMobile.classList.contains("hidden3") && !flag) {
+      flag = true;
       parisWeb.classList.add("hidden3")
       parisMobile.classList.add("hidden3")
       globeWeb.classList.remove('hidden4')
       globeMobile.classList.remove('hidden4')
       change = false;
       populationNum = 8000000000
-      //return 1.5
     }
   }
+
+  // if all the way zoomed in, replace image
   if (k == 1.5 && change) {
-    if (!globeWeb.classList.contains("hidden4") && !globeMobile.classList.contains("hidden4")) {
+    if (!globeWeb.classList.contains("hidden4") && !globeMobile.classList.contains("hidden4") && !flag) {
+      flag = true;
       globeWeb.classList.add("hidden4")
       globeMobile.classList.add("hidden4")
       parisWeb.classList.remove("hidden3")
       parisMobile.classList.remove("hidden3")
       change = false;
-      //return .99
     }
-    else if (!parisWeb.classList.contains("hidden3") && !parisMobile.classList.contains("hidden3")) {
+    else if (!parisWeb.classList.contains("hidden3") && !parisMobile.classList.contains("hidden3") && !flag) {
+      flag = true;
       parisWeb.classList.add("hidden3")
       parisMobile.classList.add("hidden3")
       townWeb.classList.remove("hidden2")
       townMobile.classList.remove("hidden2")
       change = false;
-      // return .99
     }
-    else if (!townWeb.classList.contains("hidden2") && !townMobile.classList.contains("hidden2")) {
+    else if (!townWeb.classList.contains("hidden2") && !townMobile.classList.contains("hidden2") && !flag) {
+      flag = true;
       townWeb.classList.add("hidden2")
       townMobile.classList.add("hidden2")
       peopleWeb.classList.remove("hidden1")
       peopleMobile.classList.remove("hidden1")
       change = false;
-      // return .99
     }
   }
 }
 
 function handleFreezing(k) {
   let newK = k;
-  console.log(k, oldK)
 
+console.log(k, oldK)
+  // set breaks at various zoom levels, only if that break hasn't happened yet
   if (k == 1.5) {
     newK = 1.5
     oldK = 1.5
   }
 
-  else if (1.4 >= k && k >= 1.49 && oldK != 1.45) {
+  else if (1.49 >= k && k >= 1.4 && oldK != 1.45) {
     newK = 1.45
     oldK = 1.45
   }
@@ -170,13 +163,15 @@ function handleFreezing(k) {
 
   }
 
-  else if (k < 1) {
+  else if (k < 1.08 && k > .99 && oldK != .99) {
     newK = .99
     oldK = .99
   }
 
+  // freeze interaction and display text depending on what image is showing
+
   if (!peopleWeb.classList.contains("hidden1") && !peopleMobile.classList.contains("hidden1")) {
-    if (newK == 1.5) {
+    if (newK == 1.5 && change) {
       postHighSchoolFlag = false;
       populationNum = 4
       document.querySelector(".pageCover").classList.add("freeze")
@@ -203,7 +198,7 @@ function handleFreezing(k) {
       }, "2000")
       postHighSchoolFlag = true;
     }
-    else if (newK == .99) {
+    else if (newK == .99 && change) {
       populationNum = 11000
       document.querySelector(".pageCover").classList.add("freeze")
       document.querySelector(".display4").classList.remove("hideText")
@@ -235,7 +230,7 @@ function handleFreezing(k) {
       }, "2000")
 
     }
-    else if (newK == .99) {
+    else if (newK == .99 && change) {
       populationNum = 2100000
       document.querySelector(".pageCover").classList.add("freeze")
       document.querySelector(".display7").classList.remove("hideText")
@@ -281,6 +276,8 @@ function handleFreezing(k) {
 }
 
 function showPopulation() {
+
+  // after high school size display population counter
   if (postHighSchoolFlag) {
     document.querySelector(".populationCounter").classList.remove("hideText");
     document.querySelector(".populationCounterLabel").classList.remove("hideText");
@@ -293,6 +290,7 @@ function showPopulation() {
 }
 
 function removeAllText() {
+  // helper function for removing all displayed text
   document.querySelector(".display1").classList.add("hideText")
   document.querySelector(".display2").classList.add("hideText")
   document.querySelector(".display3").classList.add("hideText")
@@ -307,6 +305,7 @@ function removeAllText() {
 
 
 
+// add all images to d3
 Promise.all([
   d3.xml('assets/people.svg'),
   d3.xml('assets/towns.svg'),
@@ -326,7 +325,5 @@ Promise.all([
 
 
 
-
-
-
+// zoom
 initZoom();
