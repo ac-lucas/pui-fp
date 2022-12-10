@@ -140,7 +140,6 @@ function handleSizeChange(k, oldZoom) {
 function handleFreezing(k) {
   let newK = k;
 
-console.log(k, oldK)
   // set breaks at various zoom levels, only if that break hasn't happened yet
   if (k == 1.5) {
     newK = 1.5
